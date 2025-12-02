@@ -32,6 +32,44 @@ flowchart LR
     end
 ```
 
+### Diagramme de communication (requête `/chat`)
+
+```mermaid
+sequenceDiagram
+    participant U as Utilisateur
+    participant UI as Streamlit UI
+    participant API as Backend FastAPI
+    participant RAG as RAG Core
+    participant DB as PostgreSQL + pgvector
+    participant LLM as OpenAI APIs
+
+    U->>UI: Pose une question
+    UI->>API: POST /chat {question, k}
+    API->>RAG: Prépare la requête de recherche
+    RAG->>DB: Recherche des documents top-k similaires
+    DB-->>RAG: Documents pertinents + scores
+    RAG->>LLM: Prompt + contexte (documents)
+    LLM-->>RAG: Réponse augmentée
+    RAG-->>API: Réponse + méta-données (sources)
+    API-->>UI: JSON réponse + sources
+    UI-->>U: Affichage de la réponse et des sources
+```
+
+### Diagramme de communication (ingestion)
+
+```mermaid
+sequenceDiagram
+    participant CLI as Script d'ingestion
+    participant FS as Fichiers (PDF / Images)
+    participant LLM as OpenAI APIs
+    participant DB as PostgreSQL + pgvector
+
+    CLI->>FS: Lecture des documents
+    CLI->>LLM: Captioning / Embeddings
+    LLM-->>CLI: Vecteurs et textes enrichis
+    CLI->>DB: INSERT documents + embeddings
+```
+
 ## 🗂️ Structure du projet
 
 ```
