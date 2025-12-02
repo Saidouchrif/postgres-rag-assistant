@@ -10,27 +10,6 @@ Assistant RAG multimodal qui répond aux questions sur des cours universitaires 
 - **Interface Streamlit** pour poser des questions et visualiser les sources.
 - **Pipeline d'ingestion** automatisé pour PDF et images (captioning + embeddings).
 
-## 🧱 Architecture
-
-```mermaid
-flowchart LR
-    User[Utilisateur \n(Étudiant / Enseignant)] -->|Question| Frontend[Streamlit UI]
-    Frontend -->|REST JSON| Backend[FastAPI]
-    Backend -->|Appel| RAGCore[RAG Core]
-    RAGCore -->|Top-k vecteurs| VectorDB[(PostgreSQL + pgvector)]
-    RAGCore -->|Embeddings & Réponses| OpenAI[OpenAI APIs]
-    VectorDB -->|Contexte + scores| RAGCore
-    RAGCore -->|Réponse + sources| Backend
-    Backend -->|Affiche| Frontend
-
-    subgraph Ingestion[Ingestion hors-ligne]
-        PDFs[PDFs] -->|Extraction + Chunking| Ingestor[Script ingestion]
-        Images[Images] -->|Captioning| Ingestor
-        Ingestor -->|Embeddings|
-        Ingestor -->|Insertions| VectorDB
-        Ingestor -->|Captioning| OpenAI
-    end
-```
 
 ### Diagramme de communication (requête `/chat`)
 
